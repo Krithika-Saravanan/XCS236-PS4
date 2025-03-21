@@ -124,7 +124,7 @@ class Test_4a(GradedTestCase):
     def test_1(self):
         """4a-1-basic: check correct type and shape for predict_x0"""
         predicted_noise = torch.randn(1, 1, 32, 32)
-        t = 999,
+        t = 999
         sample_t = torch.randn(1, 1, 32, 32)
         scheduler_params = {
             "steps": 1000,
