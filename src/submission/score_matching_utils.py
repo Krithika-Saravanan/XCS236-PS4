@@ -1,6 +1,7 @@
 import torch
 import torch.autograd as autograd
 
+
 def create_log_p_theta(
     x: torch.Tensor, mean: torch.Tensor, log_var: torch.Tensor
 ) -> torch.Tensor:
@@ -26,17 +27,39 @@ def create_log_p_theta(
     pass
     ### END CODE HERE ###
 
+
+def create_log_p_theta_closure(
+    theta: Dict[str, torch.Tensor],
+) -> Callable[[torch.Tensor], torch.Tensor]:
+    """
+    Creates a closure for the log probability function using a dictionary of parameters.
+
+    Parameters
+    ----------
+    theta : Dict[str, torch.Tensor]
+        A dictionary containing 'mean' and 'log_var' tensors.
+
+    Returns
+    -------
+    Callable[[torch.Tensor], torch.Tensor]
+        A closure that computes the log probability for a given input tensor.
+    """
+    ### START CODE HERE ###
+    pass
+    return log_p_theta_closure
+    ### END CODE HERE ###
+
+
 def compute_score_function(
-    log_p_theta: torch.Tensor, 
-    x: torch.Tensor
+    log_p_theta: Callable[[torch.Tensor], torch.Tensor], x: torch.Tensor
 ) -> torch.Tensor:
     """
     Computes the Jacobian matrix of the log probability function with respect to the input tensor x.
 
     Parameters
     ----------
-    log_p_theta : torch.Tensor
-        The log probability tensor for which the Jacobian is computed.
+    log_p_theta : Callable[[torch.Tensor], torch.Tensor]
+        The log probability function for which the Jacobian is computed.
     x : torch.Tensor
         Input tensor with respect to which the Jacobian is computed.
 
@@ -45,12 +68,13 @@ def compute_score_function(
     torch.Tensor
         The Jacobian matrix of the log probability function. The output of calling
         this function will represent the score function.
-    Hint1: Please use autograd.functional.jacobian
-    Hint2: Create a closure for log_p_theta
+
+    Hint: please use autograd.functional.jacobian
     """
     ### START CODE HERE ###
     pass
     ### END CODE HERE ###
+
 
 def compute_trace_jacobian(jacobian: torch.Tensor) -> torch.Tensor:
     """
@@ -70,6 +94,7 @@ def compute_trace_jacobian(jacobian: torch.Tensor) -> torch.Tensor:
     pass
     ### END CODE HERE ###
 
+
 def compute_frobenius_norm_squared(jacobian: torch.Tensor) -> torch.Tensor:
     """
     Computes the Frobenius norm squared of the Jacobian matrix.
@@ -87,6 +112,7 @@ def compute_frobenius_norm_squared(jacobian: torch.Tensor) -> torch.Tensor:
     ### START CODE HERE ###
     pass
     ### END CODE HERE ###
+
 
 def add_noise(x: torch.Tensor, noise_std: float) -> torch.Tensor:
     """
@@ -108,7 +134,10 @@ def add_noise(x: torch.Tensor, noise_std: float) -> torch.Tensor:
     pass
     ### END CODE HERE ###
 
-def compute_score(x: torch.Tensor, mean: torch.Tensor, log_var: torch.Tensor) -> torch.Tensor:
+
+def compute_score(
+    x: torch.Tensor, mean: torch.Tensor, log_var: torch.Tensor
+) -> torch.Tensor:
     """
     Computes the score function, which is the gradient of the log probability of a Gaussian distribution.
 
@@ -128,4 +157,5 @@ def compute_score(x: torch.Tensor, mean: torch.Tensor, log_var: torch.Tensor) ->
     """
     ### START CODE HERE ###
     pass
+    ### END CODE HERE ###
     ### END CODE HERE ###

@@ -1,13 +1,16 @@
 from typing import Dict
+
 import torch
+
 from .score_matching_utils import (
-    create_log_p_theta,
+    add_noise,
+    compute_frobenius_norm_squared,
+    compute_score,
     compute_score_function,
     compute_trace_jacobian,
-    compute_frobenius_norm_squared,
-    add_noise,
-    compute_score
+    create_log_p_theta_closure,
 )
+
 
 # Objective Function for Denoising Score Matching
 def denoising_score_matching_objective(
