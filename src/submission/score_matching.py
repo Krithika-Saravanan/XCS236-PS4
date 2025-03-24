@@ -48,6 +48,7 @@ def score_matching_objective(
     """
     mean = theta["mean"]
     log_var = theta["log_var"]
+
     ### START CODE HERE ###
     pass
     ### END CODE HERE ###

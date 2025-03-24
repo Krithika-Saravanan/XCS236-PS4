@@ -1,3 +1,5 @@
+from typing import Callable, Dict
+
 import torch
 import torch.autograd as autograd
 
@@ -6,7 +8,7 @@ def create_log_p_theta(
     x: torch.Tensor, mean: torch.Tensor, log_var: torch.Tensor
 ) -> torch.Tensor:
     """
-    Computes the log probability of a Gaussian distribution with diagonal variance based on the input and parameters.
+    Creates a closure for the log probability of a Gaussian distribution with diagonal variance.
 
     Parameters
     ----------
@@ -44,10 +46,11 @@ def create_log_p_theta_closure(
     Callable[[torch.Tensor], torch.Tensor]
         A closure that computes the log probability for a given input tensor.
     """
-    ### START CODE HERE ###
-    pass
+
+    def log_p_theta_closure(x: torch.Tensor) -> torch.Tensor:
+        return create_log_p_theta(x, theta["mean"], theta["log_var"])
+
     return log_p_theta_closure
-    ### END CODE HERE ###
 
 
 def compute_score_function(
@@ -69,7 +72,7 @@ def compute_score_function(
         The Jacobian matrix of the log probability function. The output of calling
         this function will represent the score function.
 
-    Hint: please use autograd.functional.jacobian
+    Hint: Please use autograd.functional.jacobian
     """
     ### START CODE HERE ###
     pass
