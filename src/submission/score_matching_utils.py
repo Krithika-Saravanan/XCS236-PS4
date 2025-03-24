@@ -158,4 +158,3 @@ def compute_score(
     ### START CODE HERE ###
     pass
     ### END CODE HERE ###
-    ### END CODE HERE ###
