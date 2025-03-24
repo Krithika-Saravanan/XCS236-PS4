@@ -8,7 +8,7 @@ def create_log_p_theta(
     x: torch.Tensor, mean: torch.Tensor, log_var: torch.Tensor
 ) -> torch.Tensor:
     """
-    Creates a closure for the log probability of a Gaussian distribution with diagonal variance.
+    Computes the log probability of a Gaussian distribution with diagonal variance based on the input and parameters.
 
     Parameters
     ----------
