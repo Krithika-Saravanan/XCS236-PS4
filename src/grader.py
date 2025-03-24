@@ -47,9 +47,13 @@ class Test_3a(GradedTestCase):
     @graded()
     def test_1(self): 
         """3a-1-basic: check correct type and shape for compute_score_function"""
-        log_p_theta = torch.randn(4, 2)
         x = torch.randn(4, 2)
-        score_function = submission.compute_score_function(log_p_theta, x)
+        theta = {
+            "mean": torch.randn(4, 2),
+            "log_var": torch.randn(4, 2),
+        }
+        log_p_theta_closure = submission.create_log_p_theta_closure(theta)
+        score_function = submission.compute_score_function(log_p_theta_closure, x)
         self.assertTrue(score_function.shape == torch.Size([4, 2, 4, 2]), "Incorrect shape for score function")
         self.assertTrue(isinstance(score_function, torch.Tensor), "Incorrect type for score function")
     
