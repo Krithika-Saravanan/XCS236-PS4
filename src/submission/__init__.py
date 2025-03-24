@@ -1,6 +1,7 @@
 from .score_matching import denoising_score_matching_objective, score_matching_objective
 from .score_matching_utils import (
     create_log_p_theta,
+    create_log_p_theta_closure,
     compute_score_function,
     compute_trace_jacobian,
     compute_frobenius_norm_squared,
