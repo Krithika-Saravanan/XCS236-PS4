@@ -4,101 +4,39 @@ import torch
 import torch.autograd as autograd
 
 
-def create_log_p_theta(
+def log_p_theta(
     x: torch.Tensor, mean: torch.Tensor, log_var: torch.Tensor
 ) -> torch.Tensor:
     """
-    Computes the log probability of a Gaussian distribution with diagonal variance based on the input and parameters.
+    Computes the log probability of x under a Gaussian distribution with diagonal covariance.
+
+    This function calculates log p(x) where p is a Gaussian distribution with specified
+    mean and variance parameters. The computation is done element-wise for efficiency
+    and numerical stability by working in log space.
 
     Parameters
     ----------
     x : torch.Tensor
         Input tensor for which the log probability is evaluated.
     mean : torch.Tensor
-        Mean of the Gaussian distribution.
+        Mean of the Gaussian distribution. Should have the same shape as x.
     log_var : torch.Tensor
-        Logarithm of the variance for each component in the Gaussian. The actual variance
-        is obtained by exponentiating this value (variance = exp(log_var)).
+        Logarithm of the variance for each component in the Gaussian.
+        Should have the same shape as x.
 
     Returns
     -------
     torch.Tensor
         The element-wise log probability of x under the specified Gaussian distribution.
+        Has the same shape as the input tensors.
+
     """
     ### START CODE HERE ###
     pass
     ### END CODE HERE ###
 
 
-def create_log_p_theta_closure(
-    theta: Dict[str, torch.Tensor],
-) -> Callable[[torch.Tensor], torch.Tensor]:
-    """
-    Creates a closure for the log probability function using a dictionary of parameters.
-
-    Parameters
-    ----------
-    theta : Dict[str, torch.Tensor]
-        A dictionary containing 'mean' and 'log_var' tensors.
-
-    Returns
-    -------
-    Callable[[torch.Tensor], torch.Tensor]
-        A closure that computes the log probability for a given input tensor.
-    """
-
-    def log_p_theta_closure(x: torch.Tensor) -> torch.Tensor:
-        return create_log_p_theta(x, theta["mean"], theta["log_var"])
-
-    return log_p_theta_closure
-
-
-def compute_score_function(
-    log_p_theta: Callable[[torch.Tensor], torch.Tensor], x: torch.Tensor
-) -> torch.Tensor:
-    """
-    Computes the Jacobian matrix of the log probability function with respect to the input tensor x.
-
-    Parameters
-    ----------
-    log_p_theta : Callable[[torch.Tensor], torch.Tensor]
-        The log probability function for which the Jacobian is computed.
-    x : torch.Tensor
-        Input tensor with respect to which the Jacobian is computed.
-
-    Returns
-    -------
-    torch.Tensor
-        The Jacobian matrix of the log probability function. The output of calling
-        this function will represent the score function.
-
-    Hint: Please use autograd.functional.jacobian
-    """
-    ### START CODE HERE ###
-    pass
-    ### END CODE HERE ###
-
-
-def compute_trace_jacobian(jacobian: torch.Tensor) -> torch.Tensor:
-    """
-    Computes the trace of the Jacobian matrix.
-
-    Parameters
-    ----------
-    jacobian : torch.Tensor
-        The Jacobian matrix.
-
-    Returns
-    -------
-    torch.Tensor
-        The trace of the Jacobian matrix.
-    """
-    ### START CODE HERE ###
-    pass
-    ### END CODE HERE ###
-
-
-def compute_frobenius_norm_squared(jacobian: torch.Tensor) -> torch.Tensor:
+def compute_l2norm_squared(jacobian: torch.Tensor) -> torch.Tensor:
     """
     Computes the Frobenius norm squared of the Jacobian matrix.
 
@@ -138,7 +76,7 @@ def add_noise(x: torch.Tensor, noise_std: float) -> torch.Tensor:
     ### END CODE HERE ###
 
 
-def compute_score(
+def compute_gaussian_score(
     x: torch.Tensor, mean: torch.Tensor, log_var: torch.Tensor
 ) -> torch.Tensor:
     """
@@ -161,3 +99,103 @@ def compute_score(
     ### START CODE HERE ###
     pass
     ### END CODE HERE ###
+
+
+def compute_target_score(
+    x: torch.Tensor, noisy: torch.Tensor, std: float
+) -> torch.Tensor:
+    """
+    Computes the target score for denoising score matching.
+
+    This function calculates the ground truth score for noisy data points,
+    which represents the gradient of the log probability of the clean data
+    given the noisy observations.
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        The original, clean input tensor.
+    noisy : torch.Tensor
+        The noisy version of the input tensor.
+    std : float
+        The standard deviation of the noise that was used to create
+        the noisy tensor.
+
+    Returns
+    -------
+    torch.Tensor
+        The target score
+    """
+    ### START CODE HERE ###
+    pass
+    ### END CODE HERE ###
+
+
+def compute_score(log_p: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+    """
+    Computes the score function as the gradient of the log probability with respect to x.
+
+    The score function is defined as ∇_x log p(x)
+
+    Parameters
+    ----------
+    log_p : torch.Tensor
+    x : torch.Tensor
+
+    Returns
+    -------
+    torch.Tensor
+        The score function evaluated at x, with the same shape as x.
+        Represents ∇_x log p(x) for each sample in the batch.
+
+
+    """
+    ### START CODE HERE ###
+    pass
+    ### END CODE HERE ###
+
+
+def compute_divergence(score: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+    """
+    Computes the divergence of the score function with respect to the input.
+
+    The divergence is calculated as the sum of partial derivatives ∂score_i/∂x_i
+    for each dimension i. This implementation computes the divergence by iteratively
+    calculating each partial derivative using autograd.
+
+    Parameters
+    ----------
+    score : torch.Tensor
+        The score function evaluated at x, with shape (batch_size, d) where d is
+        the dimension of the feature space.
+    x : torch.Tensor
+        The input tensor with shape (batch_size, d) with respect to which the
+        divergence is computed. Must have requires_grad=True.
+
+    Returns
+    -------
+    torch.Tensor
+        The divergence for each sample in the batch, with shape (batch_size,).
+        Represents ∑_i ∂score_i/∂x_i for each sample.
+
+    Notes
+    -----
+    - The computation is done dimension by dimension to avoid memory issues that
+      might arise from computing all derivatives at once.
+    - retain_graph=True is used to keep the computational graph for subsequent
+      iterations over dimensions.
+    - create_graph=True enables computation of higher-order derivatives if needed.
+    """
+    divergence = torch.zeros(x.size(0), device=x.device)
+    for i in range(x.size(1)):
+        grad_i = torch.autograd.grad(
+            score[:, i].sum(),
+            x,
+            retain_graph=True,  # Keep graph for subsequent iterations
+            create_graph=True,  # Needed for higher-order derivatives
+        )[0][
+            :, i
+        ]  # ∂score_i/∂x_i for all samples
+        divergence += grad_i
+
+    return divergence
