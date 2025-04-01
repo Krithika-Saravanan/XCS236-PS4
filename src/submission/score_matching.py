@@ -4,11 +4,12 @@ import torch
 
 from .score_matching_utils import (
     add_noise,
-    compute_frobenius_norm_squared,
+    compute_divergence,
+    compute_gaussian_score,
+    compute_l2norm_squared,
     compute_score,
-    compute_score_function,
-    compute_trace_jacobian,
-    create_log_p_theta_closure,
+    compute_target_score,
+    log_p_theta,
 )
 
 
