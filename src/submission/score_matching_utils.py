@@ -28,27 +28,25 @@ def log_p_theta(
     -------
     torch.Tensor
         The element-wise log probability of x under the specified Gaussian distribution.
-        Has the same shape as the input tensors.
-
+        We sum over the last dimension to obtain a tensor fo shape (B,)
     """
     ### START CODE HERE ###
     pass
     ### END CODE HERE ###
 
 
-def compute_l2norm_squared(jacobian: torch.Tensor) -> torch.Tensor:
+def compute_l2norm_squared(vector: torch.Tensor) -> torch.Tensor:
     """
-    Computes the Frobenius norm squared of the Jacobian matrix.
+    Computes the l2 norm squared of the vector.
 
     Parameters
     ----------
-    jacobian : torch.Tensor
-        The Jacobian matrix.
+    vector : torch.Tensor
 
     Returns
     -------
     torch.Tensor
-        The Frobenius norm squared of the Jacobian matrix.
+        L2 norm squared of the vector.
     """
     ### START CODE HERE ###
     pass
