@@ -18,6 +18,8 @@ def get_timesteps(training_timesteps: int, num_steps: int) -> Tuple[Tensor, Tens
 
     Returns:
         Tuple[Tensor, Tensor]: A tuple containing the timesteps and previous timesteps.
+
+    Note: make sure you return -1 for previous timesteps that do not exist
     """
     config = get_config() # useful to get torch device details
     ### START CODE HERE ###
@@ -40,6 +42,9 @@ def predict_x0(
 
     Returns:
         torch.Tensor: The predicted original image tensor.
+    
+    Note:
+        Make sure you clamp all the returned values in the [-1. 1] range.
     """
     ### START CODE HERE ###
     pass

@@ -9,14 +9,14 @@ The training objective is derived by minimizing the \textbf{Euclidean distance} 
 data distribution. Mathematically, this can be expressed as:
 
 \begin{align}
-    \mathcal{J}(\theta) &= \mathbb{E}_{p_{\text{data}}(x)} \left[ \left\| s_\theta(x) - \nabla_x \log p_{\text{data}}(x) \right\|^2 \right]
+    \mathcal{J}(\theta) &= \frac{1}{2}\mathbb{E}_{p_{\text{data}}(x)} \left[ \left\| s_\theta(x) - \nabla_x \log p_{\text{data}}(x) \right\|^2 \right]
 \end{align}
 
 Through integration by parts, this objective can be simplified to a form that involves the trace of the Jacobian of the model's score function with 
 respect to the input, along with a constant term. The simplified objective is given by:
 
 \begin{align}
-    \mathcal{J}(\theta) &= \mathbb{E}_{p_{\text{data}}(x)} \left[ \left\| s_\theta(x) \right\|^2 + 2 \, \text{Tr} \left( \nabla_x s_\theta(x) \right) \right] + C
+    \mathcal{J}(\theta) &= \mathbb{E}_{p_{\text{data}}(x)} \left[ \left\| \frac{1}{2} s_\theta(x) \right\|^2 + \, \text{Tr} \left( \nabla_x s_\theta(x) \right) \right] + C
 \end{align}
 
 where $C$ is a constant.

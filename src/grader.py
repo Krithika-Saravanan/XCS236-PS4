@@ -144,7 +144,7 @@ class Test_4a(GradedTestCase):
             image_path="",
         )
 
-    @graded(timeout=10000)
+    @graded(timeout=1)
     def test_0(self):
         """4a-0-basic: check correct type and shape for get_timesteps"""
         timesteps = submission.get_timesteps(4, 2)
@@ -160,6 +160,10 @@ class Test_4a(GradedTestCase):
         self.assertTrue(
             timesteps[1].shape == torch.Size([2]),
             "Incorrect shape for previous timesteps",
+        )
+        self.assertTrue(
+            timesteps[1][1] == -1,
+            "Incorrect value for previous timesteps",
         )
 
     @graded()
@@ -183,6 +187,9 @@ class Test_4a(GradedTestCase):
         )
         self.assertTrue(
             isinstance(predicted, torch.Tensor), "Incorrect type for image tensor"
+        )
+        self.assertTrue(
+            torch.all((predicted >= -1) & (predicted <= 1)).item(), "Incorrect type for image tensor",
         )
 
     @graded()
