@@ -90,6 +90,13 @@ def read_and_format_image(path: str, device: str = "cpu") -> Tensor:
 
 
 def get_experiment_config(experiment_name: str = "ddim"):
+    """
+    Note: Modify for 4.a & 4.b the named parameters below to the specified values 
+    to be able to run the requested experiments. 
+    **Important**: after running all the experiments, before submitting the code to
+    our online grader, make sure you revert to the default values!
+    """
+     
     config = get_config()
     if experiment_name == "ddim":
         return InferenceConfig(num_steps=10, eta=0.0, seed=config.seed)
