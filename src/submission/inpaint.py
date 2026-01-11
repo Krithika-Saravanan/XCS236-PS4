@@ -22,7 +22,9 @@ def add_forward_tnoise(
     alpha_bar_at_t = scheduler_data["alphas_bar"][timestep]
     noise = torch.randn(image.shape, device=config.device)
     ### START CODE HERE ###
-    pass
+    #pass
+    x_t = torch.sqrt(alpha_bar_at_t) * image + torch.sqrt(1 - alpha_bar_at_t) * noise
+    return x_t
     ### END CODE HERE ###
 
 def apply_inpainting_mask(
@@ -45,7 +47,13 @@ def apply_inpainting_mask(
     HINT: use add_forward_tnoise to add noise to the original image.
     """
     ### START CODE HERE ###
-    pass
+    #pass
+    # Create the noised original image for this timestep
+    original_noisy = add_forward_tnoise(original_image, timestep, scheduler_data)
+
+    # Blend: mask=1 keeps noisy_image, mask=0 keeps original_noisy
+    x_t = mask * noisy_image + (1 - mask) * original_noisy
+    return x_t
     ### END CODE HERE ###
 
 def get_mask(image: Tensor) -> Tensor:
@@ -60,5 +68,16 @@ def get_mask(image: Tensor) -> Tensor:
     # Suppose your image is [1, 3, H, W]
     config = get_config() # useful to get torch device details
     ### START CODE HERE ###
-    pass
+    #pass
+    B, C, H, W = image.shape
+    mask = torch.ones((1, 3, H, W), device=config.device)
+
+    side = H // 2
+    start = (H - side) // 2
+    end = start + side
+
+    # Center square = known region → mask = 0
+    mask[:, :, start:end, start:end] = 0
+
+    return mask
     ### END CODE HERE ###

@@ -31,7 +31,14 @@ def log_p_theta(
         We sum over the last dimension to obtain a tensor fo shape (B,)
     """
     ### START CODE HERE ###
-    pass
+    # constant term
+    log2pi = torch.log(torch.tensor(2.0 * torch.pi, device=x.device))
+
+    # compute per-dimension log prob
+    log_prob = -0.5 * (log2pi + log_var + (x - mean)**2 / torch.exp(log_var))
+
+    # sum over feature dimensions -> (batch,)
+    return torch.sum(log_prob, dim=-1)
     ### END CODE HERE ###
 
 
@@ -49,7 +56,7 @@ def compute_l2norm_squared(vector: torch.Tensor) -> torch.Tensor:
         L2 norm squared of the vector.
     """
     ### START CODE HERE ###
-    pass
+    return torch.sum(vector ** 2, dim=-1)
     ### END CODE HERE ###
 
 
@@ -70,7 +77,9 @@ def add_noise(x: torch.Tensor, noise_std: float) -> torch.Tensor:
         The input tensor with added Gaussian noise.
     """
     ### START CODE HERE ###
-    pass
+    #pass
+    noise = torch.randn_like(x) * noise_std
+    return x + noise
     ### END CODE HERE ###
 
 
@@ -95,7 +104,10 @@ def compute_gaussian_score(
         The score function evaluated at x.
     """
     ### START CODE HERE ###
-    pass
+    #pass
+    var = torch.exp(log_var)
+    score = -(x - mean) / var
+    return score
     ### END CODE HERE ###
 
 
@@ -125,7 +137,8 @@ def compute_target_score(
         The target score
     """
     ### START CODE HERE ###
-    pass
+    #pass
+    return -(noisy - x) / (std ** 2) 
     ### END CODE HERE ###
 
 
@@ -149,7 +162,22 @@ def compute_score(log_p: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
 
     """
     ### START CODE HERE ###
-    pass
+    #Ensure x requires gradient
+    if not x.requires_grad:
+        x = x.clone().detach().requires_grad_(True)
+
+
+    #Compute gradient of log_p with respect to x
+    score = torch.autograd.grad(
+        outputs=log_p,
+        inputs=x,
+        grad_outputs=torch.ones_like(log_p),
+        create_graph=True,
+        retain_graph=True,
+        only_inputs=True,
+    )[0]
+
+    return score
     ### END CODE HERE ###
 
 

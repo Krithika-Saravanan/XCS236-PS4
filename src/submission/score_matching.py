@@ -30,7 +30,22 @@ def denoising_score_matching_objective(
     mean = theta["mean"]
     log_var = theta["log_var"]
     ### START CODE HERE ###
-    pass
+    #pass
+    # Add noise
+    noisy = add_noise(x, noise_std)
+    noisy.requires_grad_(True)
+
+    # Predicted score at noisy points
+    log_p = log_p_theta(noisy, mean, log_var)
+    pred_score = compute_score(log_p, noisy)
+
+    # Target score
+    target_score = (x - noisy) / (noise_std ** 2)
+
+    # DSM loss: mean squared error over batch and dimensions
+    loss = torch.mean(torch.sum((pred_score - target_score) ** 2, dim=-1))
+
+    return loss                
     ### END CODE HERE ###
 
 
@@ -51,5 +66,24 @@ def score_matching_objective(
     log_var = theta["log_var"]
 
     ### START CODE HERE ###
-    pass
+
+    # x must require gradient
+    x = x.clone().detach().requires_grad_(True)
+
+    # log p(x)
+    log_p = log_p_theta(x, mean, log_var)
+
+    # compute score 
+    score = compute_score(log_p, x)
+
+    # compute divergence 
+    divergence = compute_divergence(score, x)
+
+    # classical score matching loss
+    loss = torch.mean(
+        0.5 * compute_l2norm_squared(score) + divergence
+    )
+
+    return loss
+    #pass
     ### END CODE HERE ###

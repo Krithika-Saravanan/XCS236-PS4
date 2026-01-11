@@ -23,7 +23,22 @@ def get_timesteps(training_timesteps: int, num_steps: int) -> Tuple[Tensor, Tens
     """
     config = get_config() # useful to get torch device details
     ### START CODE HERE ###
-    pass
+    #pass
+    #config = get_config()
+    device = config.device
+
+    # Compute evenly spaced timesteps using floor
+    step = training_timesteps / num_steps
+    timesteps = torch.floor(torch.arange(0, num_steps, device=device) * step).long()
+
+    # Ensure last timestep is exactly training_timesteps - 1
+    timesteps[-1] = training_timesteps - 1
+
+    # Previous timesteps: first is -1
+    t_prev = torch.full_like(timesteps, -1)
+    t_prev[1:] = timesteps[:-1]
+
+    return timesteps, t_prev
     ### END CODE HERE ###
 
 def predict_x0(
@@ -47,7 +62,17 @@ def predict_x0(
         Make sure you clamp all the returned values in the [-1. 1] range.
     """
     ### START CODE HERE ###
-    pass
+    #pass
+    # Get alpha_bar for current timestep
+    alphas_bar_t = scheduler_params["alphas_bar"][t]  # scalar tensor
+
+    # Compute x0
+    x0_pred = (sample_t - torch.sqrt(1 - alphas_bar_t) * predicted_noise) / torch.sqrt(alphas_bar_t)
+
+    # Clamp values to [-1, 1]
+    x0_pred = torch.clamp(x0_pred, -1.0, 1.0)
+
+    return x0_pred
     ### END CODE HERE ###
 
 def compute_forward_posterior_mean(
@@ -70,7 +95,24 @@ def compute_forward_posterior_mean(
         Tensor: The computed mean of the forward posterior distribution.
     """
     ### START CODE HERE ###
-    pass
+    #pass
+    if t_prev == -1:
+        # First step has no previous, just return x0
+        return predicted_x0
+
+    # Scheduler parameters
+    alpha_t = scheduler_params["alphas"][t]               
+    alpha_t_prev = scheduler_params["alphas"][t_prev]     
+    alpha_bar_t = scheduler_params["alphas_bar"][t]       
+    alpha_bar_t_prev = scheduler_params["alphas_bar"][t_prev]  
+
+    # Compute forward posterior mean
+    mean = (
+        torch.sqrt(alpha_bar_t_prev) * (1 - alpha_t) / (1 - alpha_bar_t) * predicted_x0
+        + torch.sqrt(alpha_t) * (1 - alpha_bar_t_prev) / (1 - alpha_bar_t) * noisy_image
+    )
+
+    return mean
     ### END CODE HERE ###
 
 def compute_forward_posterior_variance(
@@ -87,7 +129,17 @@ def compute_forward_posterior_variance(
         Tensor: The computed variance of the forward posterior distribution.
     """
     ### START CODE HERE ###
-    pass
+    #pass
+    if t_prev == -1:
+        # First step has no previous timestep; variance is 0
+        return torch.tensor(0.0, device=scheduler_params["alphas"].device)
+
+    beta_t = scheduler_params["betas"][t]                  # scalar tensor
+    alpha_bar_t = scheduler_params["alphas_bar"][t]       # scalar tensor
+    alpha_bar_t_prev = scheduler_params["alphas_bar"][t_prev]  # scalar tensor
+
+    variance = beta_t * (1 - alpha_bar_t_prev) / (1 - alpha_bar_t)
+    return variance
     ### END CODE HERE ###
 
 def get_stochasticity_std(
@@ -105,7 +157,19 @@ def get_stochasticity_std(
         Tensor: The computed standard deviation.
     """
     ### START CODE HERE ###
-    pass
+    #pass
+    if t_prev == -1:
+        return torch.tensor(0.0, device=alphas_bar.device)
+
+    abar_t = alphas_bar[t]
+    abar_prev = alphas_bar[t_prev]
+
+    # DDIM sigma_t (Eq 16)
+    std = eta * torch.sqrt(
+        (1 - abar_prev) / (1 - abar_t) * (1 - abar_t / abar_prev)
+    )
+
+    return std
     ### END CODE HERE ###
 
 def predict_sample_direction(
@@ -122,7 +186,9 @@ def predict_sample_direction(
         Tensor: The predicted sample direction.
     """
     ### START CODE HERE ###
-    pass
+    #pass
+    direction = torch.sqrt(1 - alphas_bars_prev - std ** 2) * predicted_noise
+    return direction
     ### END CODE HERE ###
 
 
@@ -137,5 +203,6 @@ def stochasticity_term(std: torch.Tensor, noise: torch.Tensor) -> torch.Tensor:
         Tensor: The stochasticity term to be added to the sample.
     """
     ### START CODE HERE ###
-    pass
+    #pass
+    return std * noise
     ### END CODE HERE ###
